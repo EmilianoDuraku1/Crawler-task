@@ -6,28 +6,32 @@ import * as urlParser from "url";
 
 const seenUrls = {};
 const seenImg = {};
+//Put here page Url
+const pageUrl = "https://www.nivea.de/produkte/nur-bei-nivea/parfum";
 
 const getUrl = (link, host, protocol) => {
   if (link.includes("http")) {
     return link;
   } else if (link.startsWith("/")) {
     return `${protocol}//${host}${link}`;
-    } else {
-      return `${protocol}//${host}/${link}`;
+  } else {
+    return `${protocol}//${host}/${link}`;
   }
 };
 
 const crawl = async ({ url, ignore }) => {
   if (seenUrls[url]) return;
   seenUrls[url] = true;
-  console.log("crawling Links", { url });
 
   const response = await fetch(url);
   const html = await response.text();
   const $ = cheerio.load(html);
   const links = $("a")
-    .map((i, link) => link.attribs.href)
+    .map((i, link) => pageUrl + link.attribs.href)
     .get();
+
+  console.log("crawling anchorLink", links);
+
   const imageUrls = $("img")
     .map((i, link) => link.attribs.src)
     .get();
@@ -36,7 +40,7 @@ const crawl = async ({ url, ignore }) => {
   console.log("crawling imagesLink", { imageUrls });
 
   // This function is to save pictures in a folder in project
-  // But doesn't work.
+  // But doesn't work
   const { host, protocol } = urlParser.parse(url);
   imageUrls.forEach((imageUrl) => {
     fetch(getUrl(imageUrl, host, protocol)).then((response) => {
@@ -57,6 +61,6 @@ const crawl = async ({ url, ignore }) => {
 };
 
 crawl({
-  url: "https://www.eucerin.nl/",
+  url: pageUrl,
   ignore: "/search",
 });
