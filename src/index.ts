@@ -36,7 +36,7 @@ const crawl = async ({ url, ignore }) => {
   console.log("crawling imagesLink", { imageUrls });
 
   // This function is to save pictures in a folder in project
-  // But doesn't work
+  // But doesn't work.
   const { host, protocol } = urlParser.parse(url);
   imageUrls.forEach((imageUrl) => {
     fetch(getUrl(imageUrl, host, protocol)).then((response) => {
